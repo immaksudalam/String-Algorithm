@@ -1,0 +1,84 @@
+#include <bits/stdc++.h>
+using namespace std;
+int len1, len2;
+string preprocess(string s){
+    int n = s.length();
+    if(n==0) return "^$";
+    string ret= "^";
+    for(int i=0; i<n; i++){
+        ret += "#"+ s.substr(i, 1);
+    }
+    ret+= "#$";
+    return ret;
+}
+
+string longestPalindrome(string s, bool type){
+    string t = preprocess(s);
+    int n = t.length();
+//    for(int i=1; i<n-1; i++){
+//        cout<<t[i]<<" ";
+//    }cout<<endl;
+    int *p = new int[n];
+    int c=0, r=0;
+    for(int i=1; i<n-1; i++){
+        int i_mirror = 2*c-i;
+
+        p[i]=(r > i)? min(r-i, p[i_mirror]):0;
+        // attempt to expand palindrome centered at i
+        while(t[i+1+p[i]] == t[i-1-p[i]]){
+            p[i]++;
+        }
+        // if palindrome centered at i expand past r,
+        // adjust center based on expanded palindrome
+        if(i + p[i]> r){
+            c = i;
+            r = i+ p[i];
+        }
+
+    }
+//    for(int i=1; i<n-1; i++){
+//        cout<<p[i]<<" ";
+//    }cout<<endl;
+    //find maximum element in p.
+    int maxlen =0;
+    int centerIndex =0;
+    int cnt=0;
+    for(int i= n-2; i>=1; i--){
+        if(p[i]==cnt)maxlen=p[i], centerIndex =i;
+        cnt++;
+    }
+    if(!type)len1 = maxlen;
+    else len2 = maxlen;
+   // cout<<maxlen<<" "<<centerIndex<<endl;
+    delete[] p;
+    return s.substr((centerIndex-1-maxlen)/2, maxlen);
+}
+
+int main()
+{
+
+    string s, str;
+    while(cin>>s){
+     len1 = 0, len2=0;
+    str = s;
+    string s1, str1;
+    s1=s;
+    reverse(str.begin(), str.end());
+    str1 = str;
+    string t = longestPalindrome(s, 0);
+    string t1 = longestPalindrome(str, 1);
+    if(len1>=len2){
+        s1+= str.substr(len1, str.length());
+       cout<<s1.length()-s.length()<<" "<< s1<<endl;
+    }
+    else{
+        str1+=s.substr(len2, str.length());
+        cout<<str1.length()-str.length()<<" "<< str1<<endl;
+    }
+
+
+
+    }
+
+}
+
